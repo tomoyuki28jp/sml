@@ -18,12 +18,6 @@
 (defvar *output-stream* *standard-output*
   "Symbol of output stream")
 
-(defvar *escape* t
-  "Escape mode flag")
-
-(defvar *safe* nil
-  "Safe mode flag")
-
 (defvar *xml-version* "1.0"
   "XML version")
 
@@ -31,6 +25,12 @@
   "Encoding")
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
+  (defvar *escape* t
+    "Escape mode flag")
+
+  (defvar *safe* nil
+    "Safe mode flag")
+
   (defvar *sml* (make-hash-table)
     "Hash table where the defined sml template are set to"))
 
@@ -69,39 +69,40 @@
 
 ; --- Escape ----------------------------------------------------
 
-(defclass safe ()
-  ((obj :initarg :obj)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass safe ()
+    ((obj :initarg :obj)))
 
-(defmacro safe (&rest body)
-  `(if *safe*
-       ,@body
-       (let ((*safe* t))
-         (make-instance 'safe :obj ,@body))))
+  (defmacro safe (&rest body)
+    `(if *safe*
+         ,@body
+         (let ((*safe* t))
+           (make-instance 'safe :obj ,@body))))
 
-(defgeneric escape (obj))
+  (defgeneric escape (obj))
 
-(defmethod escape ((char character))
-  (if *escape*
-    (case char
-      (#\& "&amp;")
-      (#\< "&lt;")
-      (#\> "&gt;")
-      (#\' "&#039;")
-      (#\" "&quot;")
-      (t (string char)))
-    char))
+  (defmethod escape ((char character))
+    (if *escape*
+        (case char
+          (#\& "&amp;")
+          (#\< "&lt;")
+          (#\> "&gt;")
+          (#\' "&#039;")
+          (#\" "&quot;")
+          (t (string char)))
+        char))
 
-(defmethod escape ((string string))
-  (if *escape*
-      (apply #'concat
-             (loop for c across string collect (escape c)))
-      string))
+  (defmethod escape ((string string))
+    (if *escape*
+        (apply #'concat
+               (loop for c across string collect (escape c)))
+        string))
 
-(defmethod escape ((safe safe))
-  (slot-value safe 'obj))
+  (defmethod escape ((safe safe))
+    (slot-value safe 'obj))
 
-(defmethod escape ((obj t))
-  (escape (->string obj)))
+  (defmethod escape ((obj t))
+    (escape (->string obj))))
 
 ; --- Output ----------------------------------------------------
 
@@ -138,20 +139,20 @@
 
 (defmacro tag (&rest args)
   (let ((end? (not (when (eq (car (last args)) '/)
-                     (setf args (subseq args 0 (1- (length args))))))))
-    (when-let (tag (awhen (pop args) (escape (->string-down it))))
-      `(progn
-         ,(when (and (string= tag "html")
-                     (member *markup-lang* '(:html :xhtml)))
-                `(p (doctype)))
-         (p (indent) "<" ,tag)
-         ,@(loop while (keywordp (car args))
-                 collect `(p (attr ,(pop args) ,(pop args))))
-         ,(if end? `(p ">" *br*)
-                   `(p (if (eq *markup-lang* :html) ">" " />") *br*))
-         ,@(loop for i in args collect
-                 `(let ((*indent-level* (1+ *indent-level*))) (pr ,i)))
-         ,(when end? `(p (indent) "</" ,tag ">" *br*))))))
+                     (setf args (subseq args 0 (1- (length args)))))))
+        (tag  (awhen (pop args) (escape (->string-down it)))))
+    `(progn
+       ,(when (and (string= tag "html")
+                   (member *markup-lang* '(:html :xhtml)))
+         `(p (doctype)))
+       (p (indent) "<" ,tag)
+       ,@(loop while (keywordp (car args))
+               collect `(p (attr ,(pop args) ,(pop args))))
+       ,(if end? `(p ">" *br*)
+            `(p (if (eq *markup-lang* :html) ">" " />") *br*))
+       ,@(loop for i in args collect
+               `(let ((*indent-level* (1+ *indent-level*))) (pr ,i)))
+       ,(when end? `(p (indent) "</" ,tag ">" *br*)))))
 
 (set-macro-character #\] (get-macro-character #\)))
 (set-macro-character #\[
@@ -201,12 +202,11 @@
        (tag input :type ,type :checked "checked" ,@args /)
        (tag input :type ,type ,@args /)))
 
-(defmacro select-form (name values &optional selected)
-  `(tag select :name ,name :id ,name
-        ,@(loop for v in values collect
-                (if (equal selected v)
-                    `(tag option :value ,v :selected "selected" ,v)
-                    `(tag option :value ,v ,v)))))
+(defun select-form (name values &optional selected)
+  (tag select :name name :id name
+       (loop for v in values collect
+             (tag option :value v :selected
+                  (when (equal selected v) "selected") v))))
 
 ; --- Template --------------------------------------------------
 
