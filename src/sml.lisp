@@ -12,9 +12,6 @@
 (defvar *indent-level* 0
   "Current level of indentation")
 
-(defvar *br* (format nil "~%")
-  "Newline")
-
 (defvar *output-stream* *standard-output*
   "Symbol of output stream")
 
@@ -65,7 +62,7 @@
                     *xml-version* *encoding*))
           (awhen (assoc *doctype*
                         (cadr (assoc *markup-lang* *doctypes*)))
-            (concat (cdr it) *br*))))
+            (concat (cdr it) #\Newline))))
 
 ; --- Escape ----------------------------------------------------
 
@@ -148,11 +145,11 @@
        (p (indent) "<" ,tag)
        ,@(loop while (keywordp (car args))
                collect `(p (attr ,(pop args) ,(pop args))))
-       ,(if end? `(p ">" *br*)
-            `(p (if (eq *markup-lang* :html) ">" " />") *br*))
+       ,(if end? `(p ">" #\Newline)
+            `(p (if (eq *markup-lang* :html) ">" " />") #\Newline))
        ,@(loop for i in args collect
                `(let ((*indent-level* (1+ *indent-level*))) (pr ,i)))
-       ,(when end? `(p (indent) "</" ,tag ">" *br*)))))
+       ,(when end? `(p (indent) "</" ,tag ">" #\Newline)))))
 
 (set-macro-character #\] (get-macro-character #\)))
 (set-macro-character #\[
@@ -177,12 +174,12 @@
      (p (indent) "<form")
      ,@(loop while (keywordp (car args))
              collect `(p (attr ,(pop args) ,(pop args))))
-     (p ">" *br*)
+     (p ">" #\Newline)
      ,@(loop for a in args collect
              `(let ((*indent-level* (1+ *indent-level*))) (pr ,a)))
      ,(unless (find-input "submit" `',args 'submit)
        `(let ((*indent-level* (1+ *indent-level*))) (submit)))
-     (p (indent) "</form>" *br*)))
+     (p (indent) "</form>" #\Newline)))
 
 (defmacro multipart-form (&rest args)
   `(form :enctype "multipart/form-data" ,@args))

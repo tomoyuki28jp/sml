@@ -23,6 +23,7 @@
            :sml->ml
            :tag
            :/
+           :find-input
            :input
            :form
            :multipart-form
