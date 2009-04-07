@@ -12,8 +12,8 @@
 (defvar *indent-level* 0
   "Current level of indentation")
 
-(defvar *output-stream* *standard-output*
-  "Symbol of output stream")
+(defvar *sml-output* *standard-output*
+  "Markup language output stream")
 
 (defvar *xml-version* "1.0"
   "XML version")
@@ -105,7 +105,7 @@
 
 (defun p (&rest args)
   (dolist (a args)
-    (when a (princ a *output-stream*)))
+    (when a (princ a *sml-output*)))
   nil)
 
 (defun pe (x)
@@ -128,16 +128,17 @@
     (format nil " ~A=\"~A\"" (escape (->string-down attr)) (escape it))))
 
 (defmacro sml->ml (&rest sml)
-  `(let ((*output-stream* (make-string-output-stream)))
+  `(let ((*sml-output* (make-string-output-stream)))
      ,@sml
-     (get-output-stream-string *output-stream*)))
+     (get-output-stream-string *sml-output*)))
 
 ; --- Markup language read macro --------------------------------
 
 (defmacro tag (&rest args)
-  (let ((end? (not (when (eq (car (last args)) '/)
-                     (setf args (subseq args 0 (1- (length args)))))))
-        (tag  (awhen (pop args) (escape (->string-down it)))))
+  (let* ((end? (not (when (eq (car (last args)) '/)
+                      (setf args (subseq args 0 (1- (length args)))))))
+         (tag  (awhen (pop args) (escape (->string-down it))))
+         (textarea? (string= tag "textarea")))
     `(progn
        ,(when (and (string= tag "html")
                    (member *markup-lang* '(:html :xhtml)))

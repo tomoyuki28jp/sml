@@ -6,7 +6,7 @@
            :*indent-mode*
            :*tab-width*
            :*indent-level*
-           :*output-stream*
+           :*sml-output*
            :*escape*
            :*safe*
            :*xml-version*
