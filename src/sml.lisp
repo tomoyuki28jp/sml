@@ -172,16 +172,9 @@
                           collect (find-input type s alias))))))
 
 (defmacro form (&rest args)
-  `(progn
-     (p (indent) "<form")
-     ,@(loop while (keywordp (car args))
-             collect `(p (attr ,(pop args) ,(pop args))))
-     (p ">" #\Newline)
-     ,@(loop for a in args collect
-             `(let ((*indent-level* (1+ *indent-level*))) (pr ,a)))
-     ,(unless (find-input "submit" `',args 'submit)
-       `(let ((*indent-level* (1+ *indent-level*))) (submit)))
-     (p (indent) "</form>" #\Newline)))
+  `(tag form ,@args
+        ,(unless (find-input "submit" `',args 'submit)
+          `(let ((*indent-level* (1+ *indent-level*))) (submit)))))
 
 (defmacro multipart-form (&rest args)
   `(form :enctype "multipart/form-data" ,@args))
