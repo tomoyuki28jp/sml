@@ -146,11 +146,12 @@
        (p (indent) "<" ,tag)
        ,@(loop while (keywordp (car args))
                collect `(p (attr ,(pop args) ,(pop args))))
-       ,(if end? `(p ">" #\Newline)
+       ,(if end? `(p ">" ,(unless textarea? #\Newline))
             `(p (if (eq *markup-lang* :html) ">" " />") #\Newline))
        ,@(loop for i in args collect
                `(let ((*indent-level* (1+ *indent-level*))) (pr ,i)))
-       ,(when end? `(p (indent) "</" ,tag ">" #\Newline)))))
+       ,(when end? `(p ,(unless textarea? `(indent))
+                       "</" ,tag ">" #\Newline)))))
 
 (set-macro-character #\] (get-macro-character #\)))
 (set-macro-character #\[
