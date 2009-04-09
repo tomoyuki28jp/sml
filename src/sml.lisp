@@ -31,6 +31,9 @@
   (defvar *sml* (make-hash-table)
     "Hash table where the defined sml template are set to"))
 
+(defvar *non-break* nil
+  "Non-breaking flag")
+
 (defvar *non-breaking-tags*
   '(title textarea a b th td h1 h2 h3 h4 h5 li dt dd label option span)
   "Non-breaking tags")
@@ -147,21 +150,27 @@
 (defmacro tag (&rest args)
   (let* ((end? (not (when (eq (car (last args)) '/)
                       (setf args (subseq args 0 (1- (length args)))))))
-         (tag  (awhen (pop args) (escape (->string-down it)))))
-    `(progn
+         (tag  (awhen (pop args) (escape (->string-down it))))
+         (non-break (gensym)))
+    `(let ((,non-break (non-breaking-tag-p ,tag)))
+       (declare (ignorable ,non-break))
        ,(when (and (string= tag "html")
                    (member *markup-lang* '(:html :xhtml)))
          `(p (doctype)))
-       (p (indent) "<" ,tag)
+       (p (unless *non-break* (indent)) "<" ,tag)
        ,@(loop while (keywordp (car args))
                collect `(p (attr ,(pop args) ,(pop args))))
-       ,(if end? `(p ">" (unless (non-breaking-tag-p ,tag) #\Newline))
-            `(p (if (eq *markup-lang* :html) ">" " />") #\Newline))
+       ,(if end? `(p ">")
+                 `(p (if (eq *markup-lang* :html) ">" " />")))
+       (unless (or ,non-break *non-break*) (p #\Newline))
        ,@(loop for i in args collect
-               `(let ((*indent-level* (1+ *indent-level*))) (pr ,i)))
-       ,(when end? `(p (unless (non-breaking-tag-p ,tag)
+               `(let ((*indent-level* (1+ *indent-level*))
+                      (*non-break* ,non-break))
+                  (pr ,i)))
+       ,(when end? `(p (unless (or ,non-break *non-break*)
                          (concat #\Newline (indent)))
-                       "</" ,tag ">" #\Newline)))))
+                       "</" ,tag ">"
+                       (unless *non-break* #\Newline))))))
 
 (set-macro-character #\] (get-macro-character #\)))
 (set-macro-character #\[
