@@ -35,7 +35,7 @@
   "Non-breaking flag")
 
 (defvar *non-breaking-tags*
-  '(title textarea a b th td h1 h2 h3 h4 h5 li dt dd label option span)
+  '(title textarea a b th td h1 h2 h3 h4 h5 li dt dd label option span p)
   "Non-breaking tags")
 
 ; --- Doctype ---------------------------------------------------
