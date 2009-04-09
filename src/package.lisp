@@ -11,6 +11,7 @@
            :*safe*
            :*xml-version*
            :*encoding*
+           :*non-breaking-tags*
            :*doctypes*
            :*doctype*
            :doctype

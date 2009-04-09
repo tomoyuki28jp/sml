@@ -31,6 +31,10 @@
   (defvar *sml* (make-hash-table)
     "Hash table where the defined sml template are set to"))
 
+(defvar *non-breaking-tags*
+  '(title textarea a b th td h1 h2 h3 h4 h5 li dt dd label option span)
+  "Non-breaking tags")
+
 ; --- Doctype ---------------------------------------------------
 
 (defvar *doctypes*
@@ -132,13 +136,18 @@
      ,@sml
      (get-output-stream-string *sml-output*)))
 
+(defun non-breaking-tag-p (tag)
+  (and (not (eq *markup-lang* :xml))
+       (member-if #'(lambda (x) (equalp (symbol-name x) tag))
+                  *non-breaking-tags*)
+       t))
+
 ; --- Markup language read macro --------------------------------
 
 (defmacro tag (&rest args)
   (let* ((end? (not (when (eq (car (last args)) '/)
                       (setf args (subseq args 0 (1- (length args)))))))
-         (tag  (awhen (pop args) (escape (->string-down it))))
-         (textarea? (string= tag "textarea")))
+         (tag  (awhen (pop args) (escape (->string-down it)))))
     `(progn
        ,(when (and (string= tag "html")
                    (member *markup-lang* '(:html :xhtml)))
@@ -146,11 +155,12 @@
        (p (indent) "<" ,tag)
        ,@(loop while (keywordp (car args))
                collect `(p (attr ,(pop args) ,(pop args))))
-       ,(if end? `(p ">" ,(unless textarea? #\Newline))
+       ,(if end? `(p ">" (unless (non-breaking-tag-p ,tag) #\Newline))
             `(p (if (eq *markup-lang* :html) ">" " />") #\Newline))
        ,@(loop for i in args collect
                `(let ((*indent-level* (1+ *indent-level*))) (pr ,i)))
-       ,(when end? `(p ,(unless textarea? `(indent))
+       ,(when end? `(p (unless (non-breaking-tag-p ,tag)
+                         (concat #\Newline (indent)))
                        "</" ,tag ">" #\Newline)))))
 
 (set-macro-character #\] (get-macro-character #\)))
