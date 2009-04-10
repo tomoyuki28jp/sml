@@ -1,3 +1,9 @@
+Version 0.1.1
+2009-04-11
+Implemented replace, append and remove manipulators for with-template and with-sml-file
+Added *non-breaking-tags* and modified indentations
+Renamed *output-stream* to *sml-output*
+
 Version 0.1.0
 2009-04-06
 Initial public release
