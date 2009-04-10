@@ -233,7 +233,7 @@
 <div id=\"div-id2\">div2</div>
 </body>
 </html>"))
-  (is-true (sml= (with-template (:test) :div [div "new"])
+  (is-true (sml= (with-template (:test) (replace div [div "new"]))
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
 \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
@@ -244,7 +244,7 @@
 <div>new</div>
 </body>
 </html>"))
-  (is-true (sml= (with-template (:test) :#div-id1 [div "new div id1"])
+  (is-true (sml= (with-template (:test) (replace "#div-id1" [div "new div id1"]))
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
 \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
@@ -252,6 +252,32 @@
 <head><title>Default title</title></head>
 <body>
 <div>new div id1</div>
+<div id=\"div-id2\">div2</div>
+</body>
+</html>"))
+  (is-true (sml= (with-template (:test) (remove head))
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
+\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+<html lang=\"ja\">
+<body>
+<div id=\"div-id1\">div1</div>
+<div id=\"div-id2\">div2</div>
+</body>
+</html>"))
+  (is-true (sml= (with-template (:test)
+                   (append head [meta :http-equiv "Content-Type"
+                                      :content "text/html; charset=UTF-8" /]))
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
+\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+<html lang=\"ja\">
+<head>
+<title>Default title</title>
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
+</head>
+<body>
+<div id=\"div-id1\">div1</div>
 <div id=\"div-id2\">div2</div>
 </body>
 </html>")))
@@ -264,7 +290,7 @@
     (is-true (sml= (with-sml-file (shtml-path "test2.sml"))
                     "<ul><li>1</li><li>2</li><li>3</li></ul>")))
   (is-true (sml= (with-sml-file (shtml-path "template1.sml")
-                   :title [title "new title"])
+                   (replace title [title "new title"]))
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
 \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
@@ -273,7 +299,7 @@
 <body><p>Default body</p></body>
 </html>"))
   (is-true (sml= (with-sml-file (shtml-path "template1.sml")
-                   :body [body "new body"])
+                   (replace body [body "new body"]))
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
 \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
