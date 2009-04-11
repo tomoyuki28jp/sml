@@ -280,6 +280,49 @@
 <div id=\"div-id1\">div1</div>
 <div id=\"div-id2\">div2</div>
 </body>
+</html>"))
+  (is-true (sml= (with-template (:test)
+                   (append head [p "test1"])
+                   (append head [p "test2"]))
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
+\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+<html lang=\"ja\">
+<head>
+<title>Default title</title>
+<p>test1</p>
+<p>test2</p>
+
+</head>
+<body>
+<div id=\"div-id1\">
+div1
+</div>
+<div id=\"div-id2\">
+div2
+</div>
+</body>
+</html>"))
+  (is-true (sml= (with-template (:test)
+                   (append head ([p "new1"] [p "new2"])))
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
+\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+<html lang=\"ja\">
+<head>
+<title>Default title</title>
+<p>new1</p>
+<p>new2</p>
+
+</head>
+<body>
+<div id=\"div-id1\">
+div1
+</div>
+<div id=\"div-id2\">
+div2
+</div>
+</body>
 </html>")))
 
 (test with-sml-file

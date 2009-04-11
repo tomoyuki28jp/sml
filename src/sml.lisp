@@ -243,29 +243,34 @@
   (read-sml (eval sml) *package*))
 
 (defmacro manipulate-sml (sml &rest args)
-  (labels ((match (selector sml)
-             (flet ((match? (1st attr)
-                      (and (equal (subseq selector 0 1) 1st)
-                           (aand (position attr sml)
-                                 (string= (->string (nth (1+ it) sml))
-                                          (subseq selector 1))))))
-               (or (match? "#" :id)
-                   (match? "." :class)
-                   (equal (->string-down (nth 1 sml))
-                          (->string-down selector)))))
-           (manipulate (sml)
-             (loop for s in sml collect
-                   (if (listp s)
-                       (or (loop for arg in args
-                                 when (match (->string (nth 1 arg)) s) return
-                                 (case (car arg)
-                                   (append  (append s (list (->list (nth 2 arg)))))
-                                   (replace (nth 2 arg))
-                                   (remove  "")
-                                   (otherwise (error "invalid manipulator: ~S"
-                                                     (car arg)))))
-                           (manipulate s))
-                       s))))
+  (labels
+      ((match (selector sml)
+         (flet ((match? (1st attr)
+                  (and (equal (subseq selector 0 1) 1st)
+                       (aand (position attr sml)
+                             (string= (->string (nth (1+ it) sml))
+                                      (subseq selector 1))))))
+           (or (match? "#" :id)
+               (match? "." :class)
+               (equal (->string-down (nth 1 sml))
+                      (->string-down selector)))))
+       (manipulate (sml)
+         (loop for s in sml as s* = s collect
+               (if (listp s)
+                   (or (loop for arg in args
+                             when (match (->string (nth 1 arg)) s*) do
+                             (setf s* (case (car arg)
+                                        (append (append s* (aand (->list (nth 2 arg))
+                                                                 (if (listp (car it))
+                                                                     it
+                                                                     (list it)))))
+                                        (replace (nth 2 arg))
+                                        (remove  "")
+                                        (otherwise (error "invalid manipulator: ~S"
+                                                          (car arg)))))
+                             finally (unless (equal s s*) (return s*)))
+                       (manipulate s))
+                   s))))
     (manipulate sml)))
 
 (defmacro with-template ((name) &rest body)
