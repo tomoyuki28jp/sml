@@ -79,9 +79,9 @@
 
   (defmacro safe (&rest body)
     `(if *safe*
-         ,@body
+         (concat ,@body)
          (let ((*safe* t))
-           (make-instance 'safe :obj ,@body))))
+           (make-instance 'safe :obj (concat ,@body)))))
 
   (defgeneric escape (obj))
 
