@@ -142,13 +142,15 @@
        t))
 
 (defun attr (&rest args)
-  (aand (loop while args
-              as k = (pop args)
-              as v = (pop args)
-              when v collect 
-              (format nil " ~A=\"~A\""
-                      (escape (->string-down k)) (escape v)))
-        (apply #'concat it)))
+  (if (and (= 1 (length args)) (listp (car args)))
+      (apply #'attr (car args))
+      (aand (loop while args
+                  as k = (pop args)
+                  as v = (pop args)
+                  when v collect 
+                  (format nil " ~A=\"~A\""
+                          (escape (->string-down k)) (escape v)))
+            (apply #'concat it))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun attr? (x)
