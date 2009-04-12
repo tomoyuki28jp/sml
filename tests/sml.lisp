@@ -94,7 +94,9 @@
                  "<p k1=\"k1\" k2=\"v2\" k3=\"v3\">ok</p>"))
   (let ((k :k3) (v "v3"))
     (is-true (sml= [p :k1 "k1" :k2 "v2" (attr k v) "ok"]
-                   "<p k1=\"k1\" k2=\"v2\" k3=\"v3\">ok</p>"))))
+                   "<p k1=\"k1\" k2=\"v2\" k3=\"v3\">ok</p>")))
+  (is-true (sml= [p (attr :k1 "k1" :k2 "v2") :k3 "v3" "ok"]
+                 "<p k1=\"k1\" k2=\"v2\" k3=\"v3\">ok</p>")))
 
 (test tags
   (is-true (sml= [p "ok"] "<p>ok</p>"))

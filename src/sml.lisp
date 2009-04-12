@@ -164,11 +164,13 @@
                    (member *markup-lang* '(:html :xhtml)))
          `(p (doctype)))
        (p (unless *non-break* (indent)) "<" ,tag)
-       ,@(loop while (attr? (car args))
-               as x = (pop args)
-               collect (if (keywordp x)
-                           `(p (attr ,x ,(pop args)))
-                           `(p (attr ,(nth 1 x) ,(nth 2 x)))))
+       ,@(loop while (attr? (car args)) as x = (pop args) collect
+               (if (keywordp x)
+                   `(p (attr ,x ,(pop args)))
+                   (progn (pop x)
+                          `(p ,@(append
+                                 (loop while x collect
+                                       `(attr ,(pop x) ,(pop x))))))))
        ,(if end? `(p ">")
                  `(p (if (eq *markup-lang* :html) ">" " />")))
        (unless (or ,non-break *non-break*) (p #\Newline))
