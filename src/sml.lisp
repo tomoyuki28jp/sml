@@ -141,10 +141,14 @@
                   *non-breaking-tags*)
        t))
 
-(defun attr (attr value)
-  (awhen value
-    (format nil " ~A=\"~A\""
-            (escape (->string-down attr)) (escape it))))
+(defun attr (&rest args)
+  (aand (loop while args
+              as k = (pop args)
+              as v = (pop args)
+              when v collect 
+              (format nil " ~A=\"~A\""
+                      (escape (->string-down k)) (escape v)))
+        (apply #'concat it)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun attr? (x)
@@ -164,13 +168,11 @@
                    (member *markup-lang* '(:html :xhtml)))
          `(p (doctype)))
        (p (unless *non-break* (indent)) "<" ,tag)
-       ,@(loop while (attr? (car args)) as x = (pop args) collect
-               (if (keywordp x)
-                   `(p (attr ,x ,(pop args)))
-                   (progn (pop x)
-                          `(p ,@(append
-                                 (loop while x collect
-                                       `(attr ,(pop x) ,(pop x))))))))
+       ,@(loop while (attr? (car args))
+               as x = (pop args)
+               collect (if (keywordp x)
+                           `(p (attr ,x ,(pop args)))
+                           `(p ,x)))
        ,(if end? `(p ">")
                  `(p (if (eq *markup-lang* :html) ">" " />")))
        (unless (or ,non-break *non-break*) (p #\Newline))

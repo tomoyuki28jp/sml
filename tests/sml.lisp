@@ -84,6 +84,12 @@
                "&amp;&lt;&gt;&#039;&quot;")))
 
 (test attr
+  (is-true (string= (attr :k1 "v1")
+                    " k1=\"v1\""))
+  (is-true (string= (attr :k1 "v1" :k2 "v2")
+                    " k1=\"v1\" k2=\"v2\""))
+  (is-true (string= (attr :k1 "v1" :k2 "v2" :k3 "v3")
+                    " k1=\"v1\" k2=\"v2\" k3=\"v3\""))
   (is-true (sml= [p :k1 "k1" :k2 "v2" :k3 "v3" "ok"]
                  "<p k1=\"k1\" k2=\"v2\" k3=\"v3\">ok</p>"))
   (is-true (sml= [p (attr :k1 "k1") :k2 "v2" :k3 "v3" "ok"]
