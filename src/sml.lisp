@@ -130,10 +130,6 @@
     (make-string (* *indent-level* *tab-width*)
                  :initial-element #\Space)))
 
-(defun attr (attr value)
-  (awhen value
-    (format nil " ~A=\"~A\"" (escape (->string-down attr)) (escape it))))
-
 (defmacro sml->ml (&rest sml)
   `(let ((*sml-output* (make-string-output-stream)))
      ,@sml
@@ -144,6 +140,16 @@
        (member-if #'(lambda (x) (equalp (symbol-name x) tag))
                   *non-breaking-tags*)
        t))
+
+(defun attr (attr value)
+  (awhen value
+    (format nil " ~A=\"~A\""
+            (escape (->string-down attr)) (escape it))))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun attr? (x)
+    (or (keywordp x)
+        (and (listp x) (eq (car x) 'attr)))))
 
 ; --- Markup language read macro --------------------------------
 
@@ -158,8 +164,11 @@
                    (member *markup-lang* '(:html :xhtml)))
          `(p (doctype)))
        (p (unless *non-break* (indent)) "<" ,tag)
-       ,@(loop while (keywordp (car args))
-               collect `(p (attr ,(pop args) ,(pop args))))
+       ,@(loop while (attr? (car args))
+               as x = (pop args)
+               collect (if (keywordp x)
+                           `(p (attr ,x ,(pop args)))
+                           `(p (attr ,(nth 1 x) ,(nth 2 x)))))
        ,(if end? `(p ">")
                  `(p (if (eq *markup-lang* :html) ">" " />")))
        (unless (or ,non-break *non-break*) (p #\Newline))

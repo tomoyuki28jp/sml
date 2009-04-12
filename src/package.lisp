@@ -23,6 +23,7 @@
            :pr
            :indent
            :sml->ml
+           :attr
            :tag
            :/
            :find-input
