@@ -218,7 +218,7 @@
 <option value=\"2\">2</option>
 <option value=\"3\">3</option>
 </select>"))
-  (is-true (sml= (select-form "name1" '(1 2 3) 2)
+  (is-true (sml= (select-form "name1" '(1 2 3) :selected 2)
 "<select name=\"name1\" id=\"name1\">
 <option value=\"1\">1</option>
 <option value=\"2\" selected=\"selected\">2</option>

@@ -228,8 +228,8 @@
        (tag input :type ,type :checked "checked" ,@args /)
        (tag input :type ,type ,@args /)))
 
-(defun select-form (name values &optional selected)
-  (tag select :name name :id name
+(defun select-form (name values &key selected id class)
+  (tag select :name name :id (or id name) :class class
        (loop for v in values collect
              (tag option :value v :selected
                   (when (equal selected v) "selected") v))))
