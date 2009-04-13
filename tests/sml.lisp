@@ -110,6 +110,8 @@
 
 (test tags
   (is-true (sml= [p "ok"] "<p>ok</p>"))
+  (is-true (sml= [p '(1 2 3)] "<p>123</p>"))
+  (is-true (sml= [p '(1 . 2)] "<p>(1 . 2)</p>"))
   (is-true (sml= [p :id "p-id" "ok"] "<p id=\"p-id\">ok</p>"))
   (is-true (sml= [body [p "ok"]] "<body><p>ok</p></body>"))
   (let ((*markup-lang* :xhtml))
