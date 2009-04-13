@@ -119,7 +119,7 @@
   (p (escape x)))
 
 (defun pr (x)
-  (if (listp x)
+  (if (and (consp x) (consp (cdr x)))
       (mapcar #'pr x)
       (pe x)))
 
