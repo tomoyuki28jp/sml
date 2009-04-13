@@ -251,7 +251,10 @@
           (with-standard-io-syntax 
             (let ((*package*   package)
                   (*readtable* readtable))
-              (read stream nil nil))))
+              (aand (loop  as i = (read stream nil 'sml-end)
+                          if (eq i 'sml-end) return r
+                          else collect i into r)
+                    (append '(progn) it)))))
         (error "sml file not found: ~A" sml))))
 
 (defmacro load-sml (sml)
