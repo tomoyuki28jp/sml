@@ -272,24 +272,23 @@
                (match? "." :class)
                (equal (->string-down (nth 1 sml))
                       (->string-down selector)))))
-       (manipulate (sml)
-         (loop for s in sml as s* = s collect
+       (manipulate (sml arg)
+         (loop for s in sml collect
                (if (listp s)
-                   (or (loop for arg in args
-                             when (match (->string (nth 1 arg)) s*) do
-                             (setf s* (case (car arg)
-                                        (append (append s* (aand (->list (nth 2 arg))
-                                                                 (if (listp (car it))
-                                                                     it
-                                                                     (list it)))))
-                                        (replace (nth 2 arg))
-                                        (remove  "")
-                                        (otherwise (error "invalid manipulator: ~S"
-                                                          (car arg)))))
-                             finally (unless (equal s s*) (return s*)))
-                       (manipulate s))
+                   (or (when (match (->string (nth 1 arg)) s)
+                         (case (car arg)
+                           (append (append s (aand (->list (nth 2 arg))
+                                                   (if (listp (car it))
+                                                       it
+                                                       (list it)))))
+                           (replace (nth 2 arg))
+                           (remove  "")
+                           (otherwise (error "invalid manipulator: ~S"
+                                             (car arg)))))
+                       (manipulate s arg))
                    s))))
-    (manipulate sml)))
+    (loop for arg in args do (setf sml (manipulate sml arg)))
+    sml))
 
 (defmacro with-template ((name) &rest body)
   `(manipulate-sml ,(get-template name) ,@body))

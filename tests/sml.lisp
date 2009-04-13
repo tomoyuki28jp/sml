@@ -350,6 +350,26 @@ div1
 div2
 </div>
 </body>
+</html>"))
+  (is-true (sml= (with-template (:test)
+                   (append  head [p "ok"])
+                   (replace title [title "new"]))
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
+\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+<html lang=\"ja\">
+<head>
+<title>new</title>
+<p>ok</p>
+</head>
+<body>
+<div id=\"div-id1\">
+div1
+</div>
+<div id=\"div-id2\">
+div2
+</div>
+</body>
 </html>")))
 
 (test with-sml-file
