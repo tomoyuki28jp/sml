@@ -121,7 +121,8 @@
 (defun pr (x)
   (if (and (consp x) (consp (cdr x)))
       (mapcar #'pr x)
-      (pe x)))
+      (unless (equal x '(nil))
+        (pe x))))
 
 ; --- Util ------------------------------------------------------
 
