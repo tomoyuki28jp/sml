@@ -176,8 +176,10 @@
                            `(p (attr ,x ,(pop args)))
                            `(p ,x)))
        ,(if end? `(p ">")
-                 `(p (if (eq *markup-lang* :html) ">" " />")))
-       (unless (or ,non-break *non-break*) (p #\Newline))
+                 `(p (if (eq *markup-lang* :html) ">" " />")
+                     (unless  (or ,non-break *non-break*) #\Newline)))
+       ,(when (= 0 (length args)) `(setf ,non-break t))
+       ,(when end? `(unless  (or ,non-break *non-break*) (p #\Newline)))
        ,@(loop for i in args collect
                `(let ((*indent-level* (1+ *indent-level*))
                       (*non-break* ,non-break))
