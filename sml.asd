@@ -7,7 +7,7 @@
 (defsystem  :sml
   :version  "0.1.1"
   :name     "sml"
-  :author   "Tomoyuki Matsumoto <tomoyuki28jp@no-spam@yahoo.co.jp>"
+  :author   "Tomoyuki Matsumoto <tomoyuki28jp@gmail.com>"
   :licence  "BSD"
   :description "s-expression markup language"
   :depends-on  (:my-util)

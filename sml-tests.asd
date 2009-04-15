@@ -6,7 +6,7 @@
 
 (defsystem :sml-tests
   :name    "sml-tests"
-  :author  "Tomoyuki Matsumoto <tomoyuki28jp@no-spam@yahoo.co.jp>"
+  :author  "Tomoyuki Matsumoto <tomoyuki28jp@gmail.com>"
   :licence "BSD"
   :description "tests for sml"
   :depends-on  (:sml :fiveam :my-util)
