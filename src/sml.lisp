@@ -260,8 +260,8 @@
                     (append '(progn) it)))))
         (error "sml file not found: ~A" sml))))
 
-(defmacro load-sml (sml)
-  (read-sml (eval sml) *package*))
+(defmacro load-sml (sml &optional (package *package*))
+  (read-sml (eval sml) package))
 
 (defmacro manipulate-sml (sml &rest args)
   (labels
