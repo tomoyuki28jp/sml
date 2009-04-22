@@ -5,7 +5,7 @@
 (in-package :sml-asd)
 
 (defsystem  :sml
-  :version  "0.1.1"
+  :version  "0.1.2"
   :name     "sml"
   :author   "Tomoyuki Matsumoto <tomoyuki28jp@gmail.com>"
   :licence  "BSD"
