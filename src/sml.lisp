@@ -22,9 +22,6 @@
   "Encoding")
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defvar *escape* t
-    "Escape mode flag")
-
   (defvar *safe* nil
     "Safe mode flag")
 
@@ -86,21 +83,17 @@
   (defgeneric escape (obj))
 
   (defmethod escape ((char character))
-    (if *escape*
-        (case char
-          (#\& "&amp;")
-          (#\< "&lt;")
-          (#\> "&gt;")
-          (#\' "&#039;")
-          (#\" "&quot;")
-          (t (string char)))
-        char))
+    (case char
+      (#\& "&amp;")
+      (#\< "&lt;")
+      (#\> "&gt;")
+      (#\' "&#039;")
+      (#\" "&quot;")
+      (t (string char))))
 
   (defmethod escape ((string string))
-    (if *escape*
-        (apply #'concat
-               (loop for c across string collect (escape c)))
-        string))
+    (apply #'concat
+           (loop for c across string collect (escape c))))
 
   (defmethod escape ((safe safe))
     (slot-value safe 'obj))

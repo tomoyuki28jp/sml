@@ -7,7 +7,6 @@
            :*tab-width*
            :*indent-level*
            :*sml-output*
-           :*escape*
            :*safe*
            :*xml-version*
            :*encoding*
