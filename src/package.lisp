@@ -7,7 +7,6 @@
            :*tab-width*
            :*indent-level*
            :*sml-output*
-           :*safe*
            :*xml-version*
            :*encoding*
            :*non-break*
@@ -17,6 +16,7 @@
            :doctype
            :safe
            :escape
+           :escape*
            :p
            :pe
            :pr

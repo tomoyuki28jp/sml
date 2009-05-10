@@ -80,9 +80,7 @@
          (let ((*safe* t))
            (make-instance 'safe :obj (concat ,@body)))))
 
-  (defgeneric escape (obj))
-
-  (defmethod escape ((char character))
+  (defun escape-char (char)
     (case char
       (#\& "&amp;")
       (#\< "&lt;")
@@ -91,25 +89,34 @@
       (#\" "&quot;")
       (t (string char))))
 
-  (defmethod escape ((string string))
-    (apply #'concat
-           (loop for c across string collect (escape c))))
+  (defgeneric escape (obj))
 
-  (defmethod escape ((safe safe))
-    (slot-value safe 'obj))
+  (defmethod escape ((char character))
+    (safe (escape-char char)))
+
+  (defmethod escape ((string string))
+    (safe (apply #'concat
+                 (loop for c across string
+                       collect (escape-char c)))))
+
+  (defmethod escape ((safe safe)) safe)
 
   (defmethod escape ((obj t))
-    (escape (->string obj))))
+    (escape (->string obj)))
+
+  (defun escape* (x)
+    (slot-value (escape x) 'obj)))
 
 ; --- Output ----------------------------------------------------
 
 (defun p (&rest args)
   (dolist (a args)
-    (when a (princ a *sml-output*)))
+    (when-let (x (or (and (typep a 'safe) (slot-value a 'obj)) a))
+      (princ x *sml-output*)))
   nil)
 
 (defun pe (x)
-  (p (escape x)))
+  (p (escape* x)))
 
 (defun pr (x)
   (if (and (consp x) (consp (cdr x)))
@@ -143,7 +150,7 @@
                   as v = (pop args)
                   when v collect 
                   (format nil " ~A=\"~A\""
-                          (escape (->string-down k)) (escape v)))
+                          (escape* (->string-down k)) (escape* v)))
             (apply #'concat it))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -156,7 +163,7 @@
 (defmacro tag (&rest args)
   (let* ((end? (not (when (eq (car (last args)) '/)
                       (setf args (subseq args 0 (1- (length args)))))))
-         (tag  (awhen (pop args) (escape (->string-down it))))
+         (tag  (awhen (pop args) (escape* (->string-down it))))
          (non-break (gensym)))
     `(let ((,non-break (non-breaking-tag-p ,tag)))
        (declare (ignorable ,non-break))
