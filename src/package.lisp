@@ -22,6 +22,7 @@
            :pr
            :indent
            :sml->ml
+           :nl->br
            :attr
            :tag
            :/

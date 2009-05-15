@@ -84,6 +84,24 @@
                "&amp;&lt;&gt;&#039;&quot;"))
   (is (string= (escape* (escape "<>")) "&lt;&gt;")))
 
+(test nl->br
+  (let ((*markup-lang* :xhtml))
+    (string= (nl->br 
+"1
+2
+3")
+"1<br />
+2<br />
+3"))
+  (let ((*markup-lang* :html))
+    (string= (nl->br 
+"1
+2
+3")
+"1<br>
+2<br>
+3")))
+
 (test attr
   (is-true (string= (attr :k1 "v1")
                     " k1=\"v1\""))

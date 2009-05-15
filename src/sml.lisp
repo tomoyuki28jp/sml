@@ -298,3 +298,8 @@
 
 (defmacro with-sml-file (file-path &rest body)
   `(manipulate-sml ,(read-sml (eval file-path) *package*) ,@body))
+
+; --- Misc ------------------------------------------------------
+
+(defun nl->br (x)
+  (regex-replace-all #\Newline x (sml->ml (tag br /))))
