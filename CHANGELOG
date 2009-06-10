@@ -1,3 +1,8 @@
+Version 0.1.5
+2009-06-10
+Fixed to not to print #\Newline for indentations when *indent-mode* is nil.
+Updated to export 'obj symbol
+
 Version 0.1.4
 2009-05-16
 Added nl->br
