@@ -15,6 +15,7 @@
            :*doctype*
            :doctype
            :safe
+           :obj
            :escape
            :escape*
            :p
