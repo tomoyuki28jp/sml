@@ -131,6 +131,10 @@
     (make-string (* *indent-level* *tab-width*)
                  :initial-element #\Space)))
 
+(defun newline ()
+  (when *indent-mode*
+    #\Newline))
+
 (defmacro sml->ml (&rest sml)
   `(let ((*sml-output* (make-string-output-stream)))
      ,@sml
@@ -178,17 +182,17 @@
                            `(p ,x)))
        ,(if end? `(p ">")
                  `(p (if (eq *markup-lang* :html) ">" " />")
-                     (unless  (or ,non-break *non-break*) #\Newline)))
+                     (unless  (or ,non-break *non-break*) (newline))))
        ,(when (= 0 (length args)) `(setf ,non-break t))
-       ,(when end? `(unless  (or ,non-break *non-break*) (p #\Newline)))
+       ,(when end? `(unless  (or ,non-break *non-break*) (p (newline))))
        ,@(loop for i in args collect
                `(let ((*indent-level* (1+ *indent-level*))
                       (*non-break* ,non-break))
                   (pr ,i)))
        ,(when end? `(p (unless (or ,non-break *non-break*)
-                         (concat #\Newline (indent)))
+                         (concat (newline) (indent)))
                        "</" ,tag ">"
-                       (unless *non-break* #\Newline))))))
+                       (unless *non-break* (newline)))))))
 
 (set-macro-character #\] (get-macro-character #\)))
 (set-macro-character #\[
