@@ -1,3 +1,7 @@
+Version 0.1.6
+2009-08-15
+Fixed a bug in replacing an element
+
 Version 0.1.5
 2009-06-10
 Fixed to not to print #\Newline for indentations when *indent-mode* is nil.
