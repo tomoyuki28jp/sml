@@ -288,7 +288,7 @@
                                                    (if (listp (car it))
                                                        it
                                                        (list it)))))
-                           (replace (nth 2 arg))
+                           (replace `(progn ,@(subseq arg 2)))
                            (remove  "")
                            (otherwise (error "invalid manipulator: ~S"
                                              (car arg)))))

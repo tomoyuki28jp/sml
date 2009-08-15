@@ -389,7 +389,22 @@ div1
 div2
 </div>
 </body>
-</html>")))
+</html>"))
+  (is-true (sml= (with-template (:test)
+                   (replace "#div-id2"
+                            [div :id "a"]
+                            [div :id "b"]
+                            [div :id "c"]))
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
+\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+<html lang=\"ja\"><head><title>Default title</title></head>
+<body>
+<div id=\"div-id1\">div1</div>
+<div id=\"a\"></div>
+<div id=\"b\"></div>
+<div id=\"c\"></div>
+</body></html>")))
 
 (test with-sml-file
   (let ((x "ok"))
